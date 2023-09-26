@@ -3,6 +3,7 @@ namespace App\Elasticsearch;
 
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Illuminate\Support\Facades\Http;
 
 class ConnectionElasticsearch
 {
@@ -126,15 +127,15 @@ class ConnectionElasticsearch
 
     }
 
-    public function connectionGet(string $index, int|null $id = null)
+    public function connectionGet(string $index, $id)
     {
-        return ($id != null) ? $this->connctionBuild()->get(['index' => $index, 'id' => $id]) : $this->connctionBuild()->indices()->getmapping(['index' => $index]) ;
+        return $this->connctionBuild()->get(['index' => $index, 'id' => $id])['_source'];
     }
 
     public function connectionUpdate(string $index, $id, array $new_datas)
     {
         try {
-            $params = ['index' => $index,'id' => $id,'body'  => ['doc' => $new_datas]];
+            $params = ['index' => $index,'id' => $id, 'body' => ['doc' => $new_datas]];
 
             // Update doc at /my_index/_doc/my_id
             $this->connctionBuild()->update($params);
